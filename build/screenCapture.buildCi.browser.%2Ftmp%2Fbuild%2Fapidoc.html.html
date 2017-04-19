@@ -1,0 +1,145 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/webpack/imports-loader#readme">imports-loader (v0.7.1)</a>
+</h1>
+<h4>imports loader module for webpack</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.imports-loader">module imports-loader</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.imports-loader.imports-loader">
+            function <span class="apidocSignatureSpan"></span>imports-loader
+            <span class="apidocSignatureSpan">(content, sourceMap)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.imports-loader" id="apidoc.module.imports-loader">module imports-loader</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.imports-loader.imports-loader" id="apidoc.element.imports-loader.imports-loader">
+        function <span class="apidocSignatureSpan"></span>imports-loader
+        <span class="apidocSignatureSpan">(content, sourceMap)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">imports-loader = function (content, sourceMap) {
+	if(this.cacheable) this.cacheable();
+	var query = loaderUtils.getOptions(this) || {};
+	var imports = [];
+	var postfixes = [];
+	Object.keys(query).forEach(function(name) {
+		var value;
+		if(typeof query[name] == "string" &amp;&amp; query[name].substr(0, 1) == "&gt;") {
+			value = query[name].substr(1);
+		} else {
+			var mod = name;
+			if(typeof query[name] === "string") {
+				mod = query[name];
+			}
+			value = "require(" + JSON.stringify(mod) + ")";
+		}
+		if(name === "this") {
+			imports.push("(function() {");
+			postfixes.unshift("}.call(" + value + "));");
+		} else if(name.indexOf(".") !== -1) {
+			name.split(".").reduce(function(previous, current, index, names) {
+				var expr = previous + current;
+
+				if(previous.length === 0) {
+					imports.push("var " + expr + " = (" + current + " || {});");
+				} else if(index &lt; names.length-1) {
+					imports.push(expr + " = {};");
+				} else {
+					imports.push(expr + " = " + value + ";");
+				}
+
+				return previous + current + ".";
+			}, "");
+		} else {
+			imports.push("var " + name + " = " + value + ";");
+		}
+	});
+	var prefix = HEADER + imports.join("\n") + "\n\n";
+	var postfix = "\n" + postfixes.join("\n");
+	if(sourceMap) {
+		var currentRequest = loaderUtils.getCurrentRequest(this);
+		var node = SourceNode.fromStringWithSourceMap(content, new SourceMapConsumer(sourceMap));
+		node.prepend(prefix);
+		node.add(postfix);
+		var result = node.toStringWithSourceMap({
+			file: currentRequest
+		});
+		this.callback(null, result.code, result.map.toJSON());
+		return;
+	}
+	return prefix + content + postfix;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
